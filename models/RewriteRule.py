@@ -39,6 +39,8 @@ class RewriteRule(models.Model):
     
     def content_negotiation(self, accept):
         available_mime_types = [ media.mime_type for media in self.representations.all() ]
+        if len(available_mime_types) == 0: return [], ''
+        
         matching_content_type = mimeparse.best_match(available_mime_types, accept)
         accept_mappings = AcceptMapping.objects.filter(
             rewrite_rule = self,

@@ -26,3 +26,6 @@ class UriRegistry(models.Model):
     
     def find_matching_rules(self, requested_uri):
         return [ rule for rule in self.rewriterule_set.all() if re.match(rule.pattern, requested_uri) != None ]
+    
+    def construct_remote_uri(self, requested_uri):
+        return "/".join([self.url.rstrip('/'), requested_uri.lstrip('/')])

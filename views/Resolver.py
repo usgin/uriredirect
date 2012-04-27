@@ -1,9 +1,11 @@
-from django.http import HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponseNotFound, HttpResponseServerError, HttpResponsePermanentRedirect, HttpResponseNotAllowed
 from uriredirect.models import UriRegistry
 from uriredirect.http import HttpResponseNotAcceptable, HttpResponseSeeOther
-from Forwarder import forward_request
 
 def resolve_uri(request, registry_label, requested_uri):
+    if request.META['REQUEST_METHOD'] != 'GET':
+        return HttpResponseNotAllowed(['GET'])
+    
     # Determine if this server is aware of the requested registry
     try:
         requested_registry = UriRegistry.objects.get(label=registry_label)
@@ -12,14 +14,14 @@ def resolve_uri(request, registry_label, requested_uri):
     
     # Determine if this server can resolve a URI for the requested registry
     if not requested_registry.can_be_resolved:
-        return forward_request(requested_registry, requested_uri)
+        return HttpResponsePermanentRedirect(requested_registry.construct_remote_uri(requested_uri))
     
     # Find rewrite rules matching the requested uri
     rules = requested_registry.find_matching_rules(requested_uri)
     if len(rules) == 0:
         return HttpResponseNotFound('The requested URI does not match any rewrite rules')
     elif len(rules) > 1:
-        rule_ids = ",".join([ rule.id for rule in rules ])
+        rule_ids = ",".join([ str(rule.id) for rule in rules ])
         return HttpResponseServerError('The requested URI matches more than one rewrite rule. Here are the rewrite rule IDs: %s' % rule_ids)
     else:
         rule = rules[0]

@@ -1,0 +1,1 @@
+[{"pk": 2, "model": "uriredirect.uriregistry", "fields": {"url": "http://elsewhere.com/another-registry", "can_be_resolved": false, "label": "another-registry"}}, {"pk": 1, "model": "uriredirect.uriregistry", "fields": {"url": "http://localhost:8000/", "can_be_resolved": true, "label": "uri-gin"}}]
