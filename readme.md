@@ -59,3 +59,15 @@ This is simply the correlation table that handles the many-to-many relationship 
 	- *There is one acceptable media type that fits the request*: We move on...
 6. The request's `{some more stuff}` part is matched against the rule's regular expression pattern. If the redirection location is a URL template, $1, $2, etc are replaced in the URL template with groups captured from the regular expression match.
 7. An absolute URL has been constructed, and the server returns a 303 response which sends the requesting client to the appropriate location.
+
+## Prerequisites
+- A functioning Django environment.
+- The [mimeparse](http://code.google.com/p/mimeparse/) Python module. Simple installation: `easy_install mimeparse`
+
+## Installation
+- Clone this repository to a location on your python-path or within according to [the layout of your Django project](https://docs.djangoproject.com/en/dev/releases/1.4/#updated-default-project-layout-and-manage-py).
+- Add `uriredirect` to your list of `INSTALLED_APPS` in your Django project's `settings.py` file.
+- Add a URL to your project's `urls.py` file that will send requested traffic to the app. Think about this. If...
+	- You want to resolve URIs in a structure like `http://{domain name}/{registry}/{identifier}/`, then you'll need the application exposed at the server's root level, something like `url(r'^', include('uriredirect.urls'))`.
+	- You want to resolve URIs in a structure like `http://{domain name}/{some fixed value}/{registry}/{identifier}/`, then you'll use something like `url(r'{that fixed value}/^', include('uriredirect.urls'))`.
+- Run `manage.py syncdb`.
