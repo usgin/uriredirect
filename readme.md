@@ -75,7 +75,7 @@ This is simply the correlation table that handles the many-to-many relationship 
 - The [mimeparse](http://code.google.com/p/mimeparse/) Python module. Simple installation: `easy_install mimeparse`
 
 ## Installation
-- Clone this repository to a location on your python-path or within according to [the layout of your Django project](https://docs.djangoproject.com/en/dev/releases/1.4/#updated-default-project-layout-and-manage-py).
+- Clone this repository to a location on your python-path or to the right place within [the layout of your Django project](https://docs.djangoproject.com/en/dev/releases/1.4/#updated-default-project-layout-and-manage-py).
 - Add `uriredirect` to your list of `INSTALLED_APPS` in your Django project's `settings.py` file.
 - Add a URL to your project's `urls.py` file that will send requested traffic to the app. Think about this. If...
 	- You want to resolve URIs in a structure like `http://{domain name}/{registry}/{identifier}/`, then you'll need the application exposed at the server's root level, something like `url(r'^', include('uriredirect.urls'))`.
