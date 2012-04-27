@@ -60,6 +60,16 @@ This is simply the correlation table that handles the many-to-many relationship 
 6. The request's `{some more stuff}` part is matched against the rule's regular expression pattern. If the redirection location is a URL template, $1, $2, etc are replaced in the URL template with groups captured from the regular expression match.
 7. An absolute URL has been constructed, and the server returns a 303 response which sends the requesting client to the appropriate location.
 
+## What is the project's layout?
+- *admin*: Contain classes that expose this project's data nicely in Django's administration interface.
+- *fixtures*: Contains .json files that are used in various unit tests.
+- *http*: Contains some simple HTTP helper classes.
+- *models*: Contains the data models for the project. These translate to the tables that are persisted in the database.
+- *tests*: Contains classes to perform unit testing on functions defined throughout the project. Run tests with `manage.py test uriredirect`.
+- *views*: Contains modules and functions that respond to HTTP requests. Right now there is only the `resolve_uri` function in the `Resolver.py` module.
+- *urls.py*: Contains a URL capture rule that sends HTTP requests to the `resolve_uri` function.
+- *other files not really worth mentioning*
+
 ## Prerequisites
 - A functioning Django environment.
 - The [mimeparse](http://code.google.com/p/mimeparse/) Python module. Simple installation: `easy_install mimeparse`
