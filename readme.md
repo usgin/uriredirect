@@ -15,7 +15,7 @@
 - can_be_resolved: True if URIs that are part of this registry can be resolved by this server.
 
 Generally, the first thing you'd want to do is set up a registry that your server can resolve.
-At `http:{your server name}/admin/uriredirect/uriregistry/add/` give your registry a label and a URL (`http://{your server name}/`). Check the `Can be resolved` box
+At `http://your server name}/admin/uriredirect/uriregistry/add/` give your registry a label and a URL (`http://{your server name}/`). Check the `Can be resolved` box
 
 ### Rewrite Rules
 *models/RewriteRule.py*
