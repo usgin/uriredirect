@@ -69,5 +69,5 @@ This is simply the correlation table that handles the many-to-many relationship 
 - Add `uriredirect` to your list of `INSTALLED_APPS` in your Django project's `settings.py` file.
 - Add a URL to your project's `urls.py` file that will send requested traffic to the app. Think about this. If...
 	- You want to resolve URIs in a structure like `http://{domain name}/{registry}/{identifier}/`, then you'll need the application exposed at the server's root level, something like `url(r'^', include('uriredirect.urls'))`.
-	- You want to resolve URIs in a structure like `http://{domain name}/{some fixed value}/{registry}/{identifier}/`, then you'll use something like `url(r'{that fixed value}/^', include('uriredirect.urls'))`.
+	- You want to resolve URIs in a structure like `http://{domain name}/{some fixed value}/{registry}/{identifier}/`, then you'll use something like `url(r'^{that fixed value}/', include('uriredirect.urls'))`.
 - Run `manage.py syncdb`.
