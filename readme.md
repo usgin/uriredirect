@@ -5,28 +5,28 @@
 - Your rewrite rules specify a regular expression pattern. Incoming URI requests are matched against these patterns, and the matching rule determines the destination of the request.
 - You write out the URLs that URIs should redirect to much as you would in Apache's mod_rewrite, using $1, $2 notation to indicate capture groups in the regular expression that should be used as part of the redirect location.
 - For each rewrite rule, you can specify multiple representations. The server performs HTTP Content Negotiation on incoming URI requests and uses your content-mappings to send a request with a specific Accept header to the appropriate redirect location.
-- Groups rewrite rules into URI Registries. Your server can "serve" any number of URI registries, and might know about other, remote registries. If your server recieves a URI request for a URI registry that it knows about, but does not serve itself, that request is forwarded to the remote server.
+- Groups rewrite rules into URI Registers. Your server can "serve" any number of URI registers, and might know about other, remote registries. If your server recieves a URI request for a URI register that it knows about, but does not serve itself, that request is forwarded to the remote server.
 
 ## What gets persisted:
 ### URI Registries
-*models/UriRegistry.py*
-- label: a short label that identifies this URI registry in a URI
-- url: an absolute URL for a server that can resolve this registries URIs. If this is a remote URL (not on this server), URI requests to this server will be forwarded to this URL.
-- can_be_resolved: True if URIs that are part of this registry can be resolved by this server.
+*models/UriRegister.py*
+- label: a short label that identifies this URI register in a URI
+- url: an absolute URL for a server that can resolve this register's URIs. If this is a remote URL (not on this server), URI requests to this server will be forwarded to this URL.
+- can_be_resolved: True if URIs that are part of this register can be resolved by this server.
 
-Generally, the first thing you'd want to do is set up a registry that your server can resolve.
-At `http://your server name}/admin/uriredirect/uriregistry/add/` give your registry a label and a URL (`http://{your server name}/`). Check the `Can be resolved` box
+Generally, the first thing you'd want to do is set up a register that your server can resolve.
+At `http://your server name}/admin/uriredirect/uriregister/add/` give your register a label and a URL (`http://{your server name}/`). Check the `Can be resolved` box
 
 ### Rewrite Rules
 *models/RewriteRule.py*
-- registry: Foreign key to the registry to which this rewrite rule belongs
+- register: Foreign key to the register to which this rewrite rule belongs
 - label: A simple label for this rewrite rule. Helps you find it in Django's admin interface.
 - description: An optional description of the rewrite rule.
 - pattern: the regular expression pattern for an incoming URI request that this rule should match.
 - representations: A many-to-many relationship with media types. Each representation of your resource has a specific mime type and is accessed at a specific URL.
 
 When generating a rewrite rule, there are two things to keep in mind:
-- a URI coming into the system will be in this general structure: `/{registry label}/{part of the URI that is matched to the rule's pattern}`. That is, don't include the registry label part of the URI in a rule's pattern.
+- a URI coming into the system will be in this general structure: `/{register label}/{part of the URI that is matched to the rule's pattern}`. That is, don't include the register label part of the URI in a rule's pattern.
 - Each rule can have many representations. You should, however, make sure that you don't create two different representations (Accept-mappings in Django's admin interface) for the same media type.
 
 ### Media Types
@@ -44,12 +44,12 @@ This is simply the correlation table that handles the many-to-many relationship 
 
 ## At a high-level, how does it work?
 1. An incoming URI request reaches the server and is handled by the `resolve_uri` function defined in *views/Resolver.py*.
-2. If the request URI looks like this `http://{your server name}/{something}/{some more stuff}/`, then `{something}` is treated as the label for a particular URI registry.
-3. The server's list of URI registries is searched for a match to the label provided in the requested URI. There are three possible outcomes:
+2. If the request URI looks like this `http://{your server name}/{something}/{some more stuff}/`, then `{something}` is treated as the label for a particular URI register.
+3. The server's list of URI registers is searched for a match to the label provided in the requested URI. There are three possible outcomes:
 	- *There is no match*: The server returns a 404 error. It does not know how to resolve the request.
-	- *There is a match, but it is marked as a URI registry that this server cannot resolve*: A 301 response forwards the requesting client to the remote registry by its specified URL.
+	- *There is a match, but it is marked as a URI register that this server cannot resolve*: A 301 response forwards the requesting client to the remote registry by its specified URL.
 	- *There is a match, and this server can resolve it*: We move on...
-4. The URI registry is searched for a rewrite rule with a regular expression pattern that matches the `{some more stuff}` part of the requested URI. Again, three possible outcomes:
+4. The URI register is searched for a rewrite rule with a regular expression pattern that matches the `{some more stuff}` part of the requested URI. Again, three possible outcomes:
 	- *There is no match*: The server returns a 404 error. There is no matching rule for the requested URI.
 	- *There are multiple matching rules*: The server returns a 500 error. Someone has misconfigured the server so that it cannot uniquely identify the requested URI.
 	- *There is one matching rule*: We move on...
@@ -78,6 +78,6 @@ This is simply the correlation table that handles the many-to-many relationship 
 - Clone this repository to a location on your python-path or to the right place within [the layout of your Django project](https://docs.djangoproject.com/en/dev/releases/1.4/#updated-default-project-layout-and-manage-py).
 - Add `uriredirect` to your list of `INSTALLED_APPS` in your Django project's `settings.py` file.
 - Add a URL to your project's `urls.py` file that will send requested traffic to the app. Think about this. If...
-	- You want to resolve URIs in a structure like `http://{domain name}/{registry}/{identifier}/`, then you'll need the application exposed at the server's root level, something like `url(r'^', include('uriredirect.urls'))`.
-	- You want to resolve URIs in a structure like `http://{domain name}/{some fixed value}/{registry}/{identifier}/`, then you'll use something like `url(r'^{that fixed value}/', include('uriredirect.urls'))`.
+	- You want to resolve URIs in a structure like `http://{domain name}/{register}/{identifier}/`, then you'll need the application exposed at the server's root level, something like `url(r'^', include('uriredirect.urls'))`.
+	- You want to resolve URIs in a structure like `http://{domain name}/{some fixed value}/{register}/{identifier}/`, then you'll use something like `url(r'^{that fixed value}/', include('uriredirect.urls'))`.
 - Run `manage.py syncdb`.
