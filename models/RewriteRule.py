@@ -8,9 +8,9 @@ class RewriteRule(models.Model):
         verbose_name = 'Rewrite Rule'
         verbose_name_plural = 'Rewrite Rules'
         
-    registry = models.ForeignKey(
-        'UriRegistry',
-        help_text='The URI Registry to which this rewrite rule belongs'                             
+    register = models.ForeignKey(
+        'UriRegister',
+        help_text='The URI Register to which this rewrite rule belongs'                             
     )
         
     label = models.CharField(

@@ -1,5 +1,5 @@
 from django.http import HttpResponseNotFound, HttpResponseServerError, HttpResponsePermanentRedirect, HttpResponseNotAllowed
-from uriredirect.models import UriRegistry
+from uriredirect.models import UriRegister
 from uriredirect.http import HttpResponseNotAcceptable, HttpResponseSeeOther
 
 def resolve_uri(request, registry_label, requested_uri):
@@ -8,16 +8,16 @@ def resolve_uri(request, registry_label, requested_uri):
     
     # Determine if this server is aware of the requested registry
     try:
-        requested_registry = UriRegistry.objects.get(label=registry_label)
-    except UriRegistry.DoesNotExist:
+        requested_register = UriRegister.objects.get(label=registry_label)
+    except UriRegister.DoesNotExist:
         return HttpResponseNotFound('The requested URI registry does not exist')
     
     # Determine if this server can resolve a URI for the requested registry
-    if not requested_registry.can_be_resolved:
-        return HttpResponsePermanentRedirect(requested_registry.construct_remote_uri(requested_uri))
+    if not requested_register.can_be_resolved:
+        return HttpResponsePermanentRedirect(requested_register.construct_remote_uri(requested_uri))
     
     # Find rewrite rules matching the requested uri
-    rules = requested_registry.find_matching_rules(requested_uri)
+    rules = requested_register.find_matching_rules(requested_uri)
     if len(rules) == 0:
         return HttpResponseNotFound('The requested URI does not match any rewrite rules')
     elif len(rules) > 1:

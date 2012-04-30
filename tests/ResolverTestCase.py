@@ -3,7 +3,7 @@ from django.test.client import Client
 from uriredirect.views import resolve_uri
 
 class ResolverTestCase(TestCase):
-    fixtures = [ 'test_uriregistry.json', 'test_rewriterule.json', 'test_mediatype.json', 'test_acceptmapping.json' ]
+    fixtures = [ 'test_uriregister.json', 'test_rewriterule.json', 'test_mediatype.json', 'test_acceptmapping.json' ]
     
     def setUp(self):
         self.c = Client()
@@ -25,17 +25,17 @@ class ResolverTestCase(TestCase):
         result = self.c.options(self.basePath + "something/sent/to/resolver")
         self.assertEqual(result.status_code, 405, 'Resolver.resolve_uri did not return a 405 error when receiving a OPTIONS')
     
-    def test_resolve_uri_registry_does_not_exist(self):
+    def test_resolve_uri_register_does_not_exist(self):
         result = self.c.get(self.basePath + "something/sent/to/resolver")
-        self.assertEqual(result.status_code, 404, 'Resolver.resolve_uri did not return a 404 error when receiving a request for an unknown URI registry')
+        self.assertEqual(result.status_code, 404, 'Resolver.resolve_uri did not return a 404 error when receiving a request for an unknown URI register')
     
-    def test_resolve_uri_registry_is_remote(self):
+    def test_resolve_uri_register_is_remote(self):
         result = self.c.get(self.basePath + "another-registry/to/resolver")
-        self.assertEqual(result.status_code, 301, 'Resolver.resolve_uri did not return a 301 redirection when receiving a request for a remote URI registry')
+        self.assertEqual(result.status_code, 301, 'Resolver.resolve_uri did not return a 301 redirection when receiving a request for a remote URI register')
     
     def test_resolve_uri_no_matching_rules(self):
         result = self.c.get(self.basePath + "uri-gin/something/sent/to/resolver")
-        self.assertEqual(result.status_code, 404, 'Resolver.resolve_uri did not return a 404 error when receiving a request for an unknown URI registry')
+        self.assertEqual(result.status_code, 404, 'Resolver.resolve_uri did not return a 404 error when receiving a request for an unknown URI register')
     
     def test_resolve_uri_multiple_matching_rules(self):
         result = self.c.get(self.basePath + "uri-gin/this/is/a/duplicate/rule")

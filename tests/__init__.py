@@ -1,3 +1,3 @@
 from RewriteRuleTestCase import RewriteRuleTestCase
-from UriRegistryTestCase import UriRegistryTestCase
+from UriRegisterTestCase import UriRegisterTestCase
 from ResolverTestCase import ResolverTestCase

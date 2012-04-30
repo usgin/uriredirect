@@ -1,8 +1,8 @@
 from django.test import TestCase
-from uriredirect.models import RewriteRule, UriRegistry, AcceptMapping, MediaType
+from uriredirect.models import RewriteRule, UriRegister, AcceptMapping, MediaType
 
 class RewriteRuleTestCase(TestCase):
-    fixtures = ['test_mediatype.json', 'test_uriregistry.json', 'test_rewriterule.json', 'test_acceptmapping.json']
+    fixtures = ['test_mediatype.json', 'test_uriregister.json', 'test_rewriterule.json', 'test_acceptmapping.json']
     
     def test_content_negotiation_without_mappings(self):
         rule = RewriteRule.objects.get(label='No Mappings')
