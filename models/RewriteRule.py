@@ -26,7 +26,7 @@ class RewriteRule(models.Model):
     pattern = models.CharField(
         max_length=1000, 
         blank=True, 
-        help_text='Regular Expression for this URI to capture. See http://docs.python.org/release/2.5.2/lib/re-syntax.html for syntax guidelines.'
+        help_text='Regular Expression for this URI to capture. See http://docs.python.org/release/2.5.2/lib/re-syntax.html for syntax guidelines. If you wish for the rule to match based on a requested file extension, please do not end the pattern with a "$" without including logic to explicitly identify a file extension.'
     )
 
     representations = models.ManyToManyField(
@@ -36,6 +36,17 @@ class RewriteRule(models.Model):
       
     def __unicode__(self):
         return self.pattern
+    
+    def extension_match(self, requested_extension):        
+        accept_mappings = AcceptMapping.objects.filter(
+          rewrite_rule = self,
+          media_type__file_extension = requested_extension  
+        )
+        
+        if len(accept_mappings) == 0:
+          return [], ''
+        else:
+          return [ mapping.redirect_to for mapping in accept_mappings ], requested_extension
     
     def content_negotiation(self, accept):
         available_mime_types = [ media.mime_type for media in self.representations.all() ]

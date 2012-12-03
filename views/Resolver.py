@@ -2,7 +2,7 @@ from django.http import HttpResponseNotFound, HttpResponseServerError, HttpRespo
 from uriredirect.models import UriRegister
 from uriredirect.http import HttpResponseNotAcceptable, HttpResponseSeeOther
 
-def resolve_uri(request, registry_label, requested_uri):
+def resolve_uri(request, registry_label, requested_uri, requested_extension):
     if request.META['REQUEST_METHOD'] != 'GET':
         return HttpResponseNotAllowed(['GET'])
     
@@ -25,16 +25,26 @@ def resolve_uri(request, registry_label, requested_uri):
         return HttpResponseServerError('The requested URI matches more than one rewrite rule. Here are the rewrite rule IDs: %s' % rule_ids)
     else:
         rule = rules[0]
-        
-    # Find the representation that is the best match for the request
-    accept = request.META.get('HTTP_ACCEPT', '*')
-    url_templates, content_type = rule.content_negotiation(accept)
-    if len(url_templates) == 0:
-        return HttpResponseNotAcceptable('No representations is acceptable for the requested MIME type: %s' % accept)
-    elif len(url_templates) > 1:
-        return HttpResponseServerError('More than one representation is defined for the acceptable MIME type: %s' % content_type)
-    else:
+    
+    # If given a file extension, that should be checked first
+    if requested_extension != None:
+      url_templates, file_extension = rule.extension_match(requested_extension)
+      if len(url_templates) == 0: pass
+      elif len(url_templates) > 1:
+        return HttpResponseServerError('More than one representation is defined for the requested file extension: %s' % file_extension)
+      else:
         url_template = url_templates[0]
+  
+    # Otherwise find the representation that is the best match for the request        
+    else:    
+      accept = request.META.get('HTTP_ACCEPT', '*')
+      url_templates, content_type = rule.content_negotiation(accept)
+      if len(url_templates) == 0:
+          return HttpResponseNotAcceptable('No representations is acceptable for the requested MIME type: %s' % accept)
+      elif len(url_templates) > 1:
+          return HttpResponseServerError('More than one representation is defined for the acceptable MIME type: %s' % content_type)
+      else:
+          url_template = url_templates[0]
         
     # Convert the URL template to a resolvable URL
     url = rule.resolve_url_template(requested_uri, url_template)

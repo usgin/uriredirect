@@ -65,7 +65,10 @@ class ResolverTestCase(TestCase):
         result = self.c.get(self.basePath + "uri-gin/first/twogroups/second/twomappings/success", **{ "HTTP_ACCEPT": 'text/html' })
         self.assertEqual(result['Location'], 'http://elsewhere.com/first--second', 'Resolver.resolve_uri did not return a 303 redirection to the appropriate location')
         
-        
+    def test_resolve_uri_success_extensions(self):
+        result = self.c.get(self.basePath + "uri-gin/first/twogroups/second/twomappings/success.txt")
+        print result
+        self.assertEqual(result['Location'], 'http://fileextension.com/text.txt', 'Resolver.resolve_uri did not return a 303 redirection to the appropriate location when given a file extension')   
         
         
         

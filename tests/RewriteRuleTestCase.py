@@ -22,6 +22,13 @@ class RewriteRuleTestCase(TestCase):
         self.assertEqual(result[0], ['http://domain.com/text.txt'], 'RewriteRule.content_negotiation on a rule with multiple mappings did not return the correct URL')
         self.assertEqual(result[1], 'text/plain', 'RewriteRule.content_negotiation on a rule with multiple mappings did not return the correct acceptable content-type')
     
+    def test_extension_match(self):
+        rule = RewriteRule.objects.get(label='Two Mappings')
+        
+        result = rule.extension_match('.txt')
+        self.assertEqual(result[0], ['http://domain.com/text.txt'], 'RewriteRule.extension_match on a rule with multiple mappings did not return the correct URL')
+        self.assertEqual(result[1], '.txt', 'RewriteRule.extension_match on a rule with multiple mappings did not return the correct acceptable file extension')
+    
     def test_content_negotiation_inexact_match(self):
         rule = RewriteRule.objects.get(label='Two Mappings')
         
