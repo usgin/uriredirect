@@ -39,14 +39,14 @@ class RewriteRule(models.Model):
     
     def extension_match(self, requested_extension):        
         accept_mappings = AcceptMapping.objects.filter(
-          rewrite_rule = self,
-          media_type__file_extension = requested_extension  
+            rewrite_rule = self,
+            media_type__file_extension = requested_extension  
         )
         
         if len(accept_mappings) == 0:
-          return [], ''
+            return [], ''
         else:
-          return [ mapping.redirect_to for mapping in accept_mappings ], requested_extension
+            return [ mapping.redirect_to for mapping in accept_mappings ], requested_extension
     
     def content_negotiation(self, accept):
         available_mime_types = [ media.mime_type for media in self.representations.all() ]
